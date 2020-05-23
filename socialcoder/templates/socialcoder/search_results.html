@@ -1,0 +1,31 @@
+{% extends "socialcoder/base.html" %}
+  {% block content %}
+  <small class="text-muted">Search Results</small>
+  <br><br>
+
+{% for post in object_list %}
+<div onclick="location.href='{% if user.is_authenticated %}{% url 'socialcoder-post-detail' post.id %}{%else%}{% url 'login' %}{%endif%}';"
+ class="post-search">
+  <div>
+    {% if post.category != None %}
+    <small style="color: black;"><b><a href="{% url 'socialcoder-category-detail' post.category.id %}">{{ post.category }}</b></small>•&nbsp;
+    {% endif %}
+    <img class="rounded-circle" width=28 height=28 src="{{ post.author.profile.image.url }}">
+    <small class="text-muted">posted by <a href="{% url 'profile-detail' post.author.id %}">{{ post.author }}</a>
+      {{ post.date_posted|timesince }} ago </small>
+  </div>
+  <br>
+  <div>
+  <h6><a class="article-title">{{ post.title }}</a></h6>
+  </div>
+  <p> {{ post.code | safe }} </p>
+</div>
+<br><br>
+{% empty %}
+        <p> Sorry, there were no results found :( </p>
+{% endfor %}
+{% endblock content %}
+
+{% block side %}
+Leaderboard
+{% endblock side %}

@@ -1,0 +1,11 @@
+{% extends "socialcoder/base.html" %}
+{% block content %}
+  <label>Search: <input id="search" type="text"></label>
+  <table>
+        {% for user in filter.qs %}
+          <tr>
+          <td><a href="{% url 'profile-detail' user.id %}">{{ user.username }}</a></td>
+          </tr>
+        {% endfor %}
+  </table>
+{% endblock content %}

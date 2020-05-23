@@ -1,0 +1,17 @@
+{% extends "socialcoder/base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+  <div>
+    <form action="" method="POST">
+      {% csrf_token %}
+      {{ form.media }}
+      {{ form|crispy }}
+      <input class="btn btn-info btn-sm" type="submit" value="Post">
+    </form>
+  </div>
+{% endblock content %}
+{% block side %}
+You can create a category for your post to make it easier for users to find it.
+<br><br>
+<a href="{% url 'socialcoder-category-create' %}" class="btn btn-info">Create a Category</a>
+{% endblock side %}

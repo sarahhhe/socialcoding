@@ -1,0 +1,71 @@
+{% extends "socialcoder/base.html" %}
+  {% block content %}
+<div class="row py-5 px-4">
+    <div class="col-xl-8 col-md-10 col-sm-10 mx-auto">
+        <!-- Profile widget -->
+        <div class="bg-white shadow rounded overflow-hidden">
+            <div class="px-4 pt-0 pb-4 bg-dark">
+                <div class="media align-items-end profile-header">
+                    <div class="profile mr-3"><img src="{{object.image.url}}" alt="..." width="130" class="rounded mb-2 img-thumbnail">
+                    {% if object.user == user %}
+                    <a href="{% url 'profile' %}" class="btn btn-dark btn-sm btn-block">Edit profile</a>
+                    {% endif %}
+                  </div>
+                    <div class="media-body mb-5 text-white">
+                        <h4 class="mt-0 mb-0">{{ object.user }}</h4>
+                        <p class="small mb-4"> <i class="fa fa-map-marker mr-2"></i>{{ object.location }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-light p-4 d-flex justify-content-end text-center">
+                <ul class="list-inline mb-0">
+                    <li class="list-inline-item">
+                        <h5 class="font-weight-bold mb-0 d-block">{{object.user.post_set.all.count}}</h5><small class="text-muted"> <i class="fas fa-code mr-1"></i>Posts</small>
+                    </li>
+                    <li class="list-inline-item">
+                        <h5 class="font-weight-bold mb-0 d-block">{{object.user.response_set.all.count}}</h5><small class="text-muted"> <i class="fa fa-comment-o mr-2"></i>Comments</small>
+                    </li>
+                    <li class="list-inline-item">
+                        <h5 class="font-weight-bold mb-0 d-block">{{object.user.category_set.all.count}}</h5><small class="text-muted"> <i class="fa fa-comment-o mr-2"></i>Categories</small>
+                    </li>
+                </ul>
+            </div>
+            <div class="py-4 px-4">
+            {% for category in userCategories %}
+            {% if category.user == object.user %}
+            <span style="background-color:#E5E5E5;"><a class="userCategories" href="{% url 'socialcoder-category-detail' category.category.id %}">{{category.category}}</a></span>
+            {% endif %}
+            {% endfor %}
+            </div>
+            <div class="py-4 px-4">
+                <div class="py-4">
+                    <h5 class="mb-3">Recent posts</h5>
+                    {% for post in posts %}
+                    {% if post.author.id == object.id %}
+                    <div style="cursor:pointer;" onclick="location.href='{% url 'socialcoder-post-detail' post.id %}';" class="p-4 bg-light rounded shadow-sm">
+                      <b><a class="mb-3">{{ post.title }}</a></b>
+                        <p class="font-italic mb-0">{{post.code | safe}}</p>
+                        <ul class="list-inline small text-muted mt-3 mb-0">
+                            <li class="list-inline-item"><i class="fa fa-comment-o mr-2"></i>{{post.response_set.all.count}} Comments</li>
+                            <li class="list-inline-item"><i class="fa fa-heart-o mr-2"></i>{{post.vote_set.all.count}} Votes</li>
+                        </ul>
+                    </div><br>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <!-- End profile widget -->
+    </div>
+</div>
+  {% endblock content %}
+  {% block side %}
+  Create a new post.
+  <br><br>
+  <a href="{% url 'socialcoder-post-create' %}" class="btn btn-info">Create a Post</a>
+  <br><br>
+  You can create a new category for your posts to make it easier for users to find it.
+  <br><br>
+  <a href="{% url 'socialcoder-category-create' %}" class="btn btn-info">Create a Category</a>
+  {% endblock side %}

@@ -1,0 +1,49 @@
+{% extends "socialcoder/base.html" %}
+{% block content %}
+<div class="row">
+<div class="col-md-4 d-none d-md-block">
+  <div style="padding:5px; border-width: 1px; background-color:white; border-style:solid; border-color:Gainsboro;">
+  <table style="border-color:Gainsboro; background-color:white;">
+    <th>Categories</th><tr><td></td> </tr><tr><td></td></tr>
+    <div>
+    <tr><td style="padding:3px;"><button>All socialCoders</button></td></tr>
+      {% for category in categories %}
+      <tr><td style="padding:3px;"><button>{{category}}</button></td></tr>
+      {% endfor %}</div>
+  </table>
+</div>
+</div>
+
+<div class="col-md-8">
+<div class="container py-5">
+       <div class="row">
+           <div class="col-lg-7 mx-auto bg-white rounded shadow">
+
+               <!-- Fixed header table-->
+               <div class="table-responsive">
+                   <table class="table table-fixed">
+                       <thead>
+                           <tr>
+                               <th scope="col" class="col-3">#</th>
+                               <th scope="col" class="col-9">Username</th>
+
+                           </tr>
+                       </thead>
+                       <tbody>
+                         {% for socialCoder in socialCoders %}
+                           <tr>
+                               <th scope="row" class="col-3">{{ forloop.counter }}</th>
+                               <td colspan="4" class="col-6">{{ socialCoder.user }}</td>
+                               <td class="col-3"><img class="rounded-circle" width=45 height=45 src="{{ socialCoder.image.url }}"></td>
+                           </tr>
+                        {% endfor %}
+                       </tbody>
+                   </table>
+               </div><!-- End -->
+
+           </div>
+       </div>
+   </div>
+</div>
+</div>
+{% endblock content %}

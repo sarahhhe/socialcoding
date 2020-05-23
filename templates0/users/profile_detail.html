@@ -1,0 +1,35 @@
+{% extends "socialcoder/base.html" %}
+  {% block content %}
+    <article class="media content-section">
+        <div class="media-body">
+          <div class="article-metadata">
+            <p class="mr-2">{{ object.user }}</p>
+            {% if object.user == user %}
+              <div>
+                <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'profile' %}">Edit Profile</a>
+                <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'socialcoder-post-create' %}">Create</a>
+              </div>
+            {% endif %}
+          </div>
+          <img class="rounded-circle account-img" src="{{ object.image.url }}">
+          <h2 class="article-title">{{ object.user.first_name }} {{ object.user.last_name }}</h2>
+          <p class="article-content">{{ object.bio }}</p>
+          <p> <b>Score</b> {{ object.score }} </p>
+          <hr>
+
+          <div class="article-metadata">
+          <div class="user-posts">
+            <h5><b>Top posts by {{ object.user }} </b></h5>
+            {% for post in posts %}
+              {% if post.author.id == object.id %}
+                <hr>
+                <p><a href="{% url 'socialcoder-post-detail' post.id %}"> {{ post.title }} </a></p>
+                <p> {{ post.content }} </p>
+              {% endif %}
+            {% endfor %}
+          </div>
+          </div>
+        </div>
+    </article>
+
+  {% endblock content %}

@@ -1,0 +1,162 @@
+{% extends "socialcoder/base.html" %}
+{% load crispy_forms_tags %}
+  {% block content %}
+      <div class="container py-5">
+            <div class="col-lg-12 mx-auto">
+                <!-- Timeline -->
+                <ul class="timeline">
+                  <li class="timeline-item bg-white rounded ml-3 p-4 shadow">
+                    <div class ="row">
+                      <div class = "col-2" style="padding-top:6px;">
+                        {% if object.vote_set.all.count == 0 %}
+                        <div align="center">
+                          <button class="upvote" id="{{object.id}}">  <span class="material-icons upvoteHover" title="upvote" style="font-size: 3em;">arrow_drop_up</span></button>
+                          <div style="font-size: 1em;"> {{ object.votes }} </div>
+                          <button class="downvote" id="{{object.id}}"> <span class="material-icons downvoteHover" title="downvote" style="font-size: 3em;">arrow_drop_down</span></button>
+                        </div>
+                        {% else %}
+                        <div align="center">
+                          <button class="upvote" id="{{object.id}}">  <span class="material-icons upvoteHover" title="upvote" style="font-size: 3em;">arrow_drop_up</span></button>
+                          <div style="font-size: 1em;"> {{ object.votes }} </div>
+                          <button class="downvote" id="{{object.id}}"> <span class="material-icons downvoteHover" title="downvote" style="font-size: 3em;">arrow_drop_down</span></button>
+                        </div>
+                        {% endif %}
+                        {% for v in object.vote_set.all %}
+                          {% if  v.user  == user and v.type == "upvote" %}
+                            <script>
+                              var post_id = "{{object.id}}";
+                              var elements = document.getElementsByClassName("upvote");
+                              for (i = 0; i < elements.length; i++){
+                                if (elements[i].id == post_id) {
+                                  elements[i].style.color = "green";
+                                }
+                              }
+                            </script>
+                          {% endif %}
+                      {% endfor %}
+                              {% for v in object.vote_set.all %}
+                                {% if  v.user  == user and v.type == "downvote" %}
+                                  <script>
+                                    var post_id = "{{object.id}}";
+                                    var elements = document.getElementsByClassName("downvote");
+                                    for (i = 0; i < elements.length; i++){
+                                      console.log(elements[i])
+                                      if (elements[i].id == post_id) {
+                                        elements[i].style.color = "red";
+                                      }
+                                    }
+                                  </script>
+                                {% endif %}
+                              {% endfor %}
+                      </div>
+                      <div class ="col-10">
+                        <h2 class="h5 mb-0">{{object.title}}</h2><br>
+                        <img class="rounded-circle" width=20 height=20 src="{{ object.author.profile.image.url }}">
+                        <span class="small text-gray"><a href="{% url 'profile-detail' object.author.id %}">{{ object.author }}</a></span>
+                        <span class="small text-gray"><i class="fa fa-clock-o mr-1"></i>{{object.date_posted}}</span>
+                        <p class="text-small mt-2 font-weight-light">{{ object.code | safe }}</p>
+                        {% if object.author == user %}
+                          <div>
+                            <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'socialcoder-post-update' object.id %}">Edit Post</a>
+                            <a class="btn btn-danger btn-sm mt-1 mb-1" href="{% url 'socialcoder-post-delete' object.id %}">Delete</a>
+                          </div>
+                        {% endif %}
+                    </div>
+                    </div>
+                    </li>
+                  {% if object.author != user %}
+                  <li class="timeline-item bg-white rounded ml-3 p-4 shadow">
+                    <hr>
+                    <div class="row" style="padding-left:18px;">
+                      <p style="font-size:12px;">Comment as <a href="{% url 'profile-detail' user.id %}"> {{ user }}</a>
+                    </div>
+                    <div class="cmt-row">
+                        <div>
+                          <form action="" method="POST">
+                            {% csrf_token %}
+                            {{ form.media }}
+                            {{ form|crispy }}
+                            <input type="submit" class="btn btn-info btn-sm" value="Post">
+                          </form>
+                        </div>
+                    </div>
+                    <br>
+                  </li>
+                  {% endif %}
+                  <!-- COMMENTS -->
+                    <ul class="timeline">
+                      {% for response in responses %}
+                        {% if response.post == object %}
+                        <li class="timeline-item bg-white rounded ml-3 p-4 shadow">
+                          <div class ="row">
+                            <!-- Voting arrows column -->
+                             <div class = "col-2">
+                                {% if response.responsevote_set.all.count == 0 %}
+                                  <div align="center">
+                                    <button class="upvote-response" id="{{response.id}}">  <span class="material-icons upvoteHover" title="Upvote" onclick="upvoteResponse({{response.id}},{{object.id}})" style="font-size: 3em;">arrow_drop_up</span></button>
+                                    <div style="font-size: 1em;"> {{ response.votes }} </div>
+                                    <button class="downvote-response" id="{{response.id}}"> <span class="material-icons downvoteHover" title="Downvote" onclick="downvoteResponse({{response.id}},{{object.id}})" style="font-size: 3em;">arrow_drop_down</span></button>
+                                  {% if object.author == user %}
+                                  <button class="acceptResponse" id="{{response.id}}" title="Select as best answer" style="cursor:pointer;font-size:2em; {% if response.best == True %}color:#28A745;{% endif %}">✓</button>
+                                  {% endif %}
+                                </div>
+                                {% else %}
+                                <div align="center">
+                                  <button class="upvote-response" id="{{response.id}}"><span class="material-icons upvoteHover" title="Upvote" onclick="upvoteResponse({{response.id}},{{object.id}})" style="font-size: 3em;">arrow_drop_up</span></button>
+                                  <div style="font-size: 1em;"> {{ response.votes }}</div>
+                                  <button class="downvote-response" id="{{response.id}}"><span class="material-icons downvoteHover" title="Downvote" onclick="downvoteResponse({{response.id}},{{object.id}})" style="font-size: 3em;">arrow_drop_down</span></button>
+                                  {% if object.author == user %}
+                                  <button class="acceptResponse" id="{{response.id}}" title="Select as best answer" style="cursor:pointer;font-size:2em; {% if response.best == True %}color:#28A745;{% endif %}">✓</button>
+                                {% endif %}
+                                  </div>
+                              {% endif %}
+                              </div>
+                        <!-- Comment column -->
+                          <div class = "col-10">
+                          {% if response.best == True and object.author == user %}
+                            <span class="badge badge-success">you have accepted this as the best answer</span><br><br>
+                          {% elif response.best == True and object.author != user %}
+                            <span class="badge badge-success">the owner of this question has accepted this as the best answer</span><br><br>
+                          {% endif %}
+                            <div class="timeline-arrow"></div>
+                            <h2 class="h5 mb-0"><p style="font-size:12px;">
+                              <img class="rounded-circle" width=26 height=26 src="{{ response.author.profile.image.url }}">
+                              <a href="{% url 'profile-detail' user.id %}"> {{ response.author }}</a>
+                            </p></h2><span class="small text-gray">
+                              <i class="fa fa-clock-o mr-1"></i>{{response.date_posted}}</span>
+                            <p class="text-small mt-2 font-weight-light">{{ response.code | safe }}</p>
+                        </div>
+                      </div>
+                    </li>
+                        {% endif %}
+                      {% endfor %}
+                    </ul>
+                    <!-- End -->
+                </ul>
+                <!-- End -->
+            </div>
+    </div>
+  {% endblock content %}
+
+  {% block side %}
+  <h5><a href="{% url 'socialcoder-leaderboard' %}">Leaderboard</a></h5>
+
+  <table style="background-color:white; border-color:white;">
+    <div class="leaderboardTitle">Today's Top socialCoders</div>
+    {% for socialCoder in socialCoders %}
+  <tr><td>
+    <div onclick="location.href='{% url 'profile-detail' socialCoder.user.id %}';" style="cursor: pointer;" class="row">
+    <div style="padding-left:5px; width:2px;padding-top:8px;">
+    <p align="right" style="font-size:14px;"> {{ forloop.counter }} </p>
+    </div>
+    <div style="width:72px;padding-top:5px;">
+    <img align="right" class="rounded-circle" width=30 height=30 src="{{ socialCoder.image.url }}">
+    </div>
+    <div style="width:80px;padding-left:6px; padding-top:7px;">
+    <p align="left" style="font-size:14px;">{{ socialCoder.user }}</p>
+    </div>
+    </div>
+  </td></tr>
+  {% endfor %}
+  </table>
+  {% endblock side %}
